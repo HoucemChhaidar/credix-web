@@ -1,5 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AppMainComponent} from './app.main.component';
+import { UserService } from './demo/service/user.service';
+import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-topbar',
@@ -246,8 +248,8 @@ import {AppMainComponent} from './app.main.component';
                                 <img src="assets/layout/images/topbar/avatar-eklund.png" alt="mirage-layout" />
                             </span>
 								<span class="profile-info-wrapper">
-                                <h3>Olivia Eklund</h3>
-                                <span>Design</span>
+                                <h3>{{ fullName }} </h3>
+                                <span>{{ role }}</span>
                             </span>
 							</a>
 							<ul class="profile-item-submenu fadeInDown">
@@ -259,8 +261,8 @@ import {AppMainComponent} from './app.main.component';
 									<div class="profile">
 										<img src="assets/layout/images/topbar/avatar-eklund.png" alt="mirage-layout"
 														width="40" />
-										<h1>Olivia Eklund</h1>
-										<span>Design</span>
+										<h1>{{ fullName }} </h1>
+										<span>{{ role }}</span>
 									</div>
 								</li>
 								<li class="layout-submenu-item">
@@ -288,7 +290,7 @@ import {AppMainComponent} from './app.main.component';
 									<i class="pi pi-angle-right"></i>
 								</li>
 								<li class="layout-submenu-footer">
-									<button class="signout-button">Sign Out</button>
+									<button class="signout-button" (click)="logout()">Sign Out</button>
 									<button class="buy-mirage-button">Buy Mirage</button>
 								</li>
 							</ul>
@@ -307,8 +309,8 @@ import {AppMainComponent} from './app.main.component';
                                 <img src="assets/layout/images/topbar/avatar-eklund.png" alt="mirage-layout" />
                             </span>
 								<span class="profile-info-wrapper">
-                                <h3>Olivia Eklund</h3>
-                                <span>Design</span>
+                                <h3>{{ fullName }} </h3>
+                                <span>{{ role }}</span>
                             </span>
 							</a>
 							<ul class="fadeInDown">
@@ -319,8 +321,8 @@ import {AppMainComponent} from './app.main.component';
 									</div>
 									<div class="profile">
 										<img src="assets/layout/images/topbar/avatar-eklund.png" alt="mirage-layout" width="45" />
-										<h1>Olivia Eklund</h1>
-										<span>Design</span>
+										<h1>{{ fullName }} </h1>
+										<span>{{ role }}</span>
 									</div>
 								</li>
 								<li>
@@ -348,7 +350,7 @@ import {AppMainComponent} from './app.main.component';
 									<i class="pi pi-angle-right"></i>
 								</li>
 								<li class="layout-submenu-footer">
-									<button class="signout-button">Sign Out</button>
+									<button class="signout-button" (click)="logout()">Sign Out</button>
 									<button class="buy-mirage-button">Buy Mirage</button>
 								</li>
 							</ul>
@@ -359,15 +361,29 @@ import {AppMainComponent} from './app.main.component';
         </div>
     `
 })
-export class AppTopBarComponent {
+export class AppTopBarComponent implements OnInit {
 
     activeItem: number;
+	fullName : string = '';
+	role : string = '';
 
-    constructor(public appMain: AppMainComponent) {}
+    constructor(public appMain: AppMainComponent, private userService:UserService) {}
 
     mobileMegaMenuItemClick(index) {
         this.appMain.megaMenuMobileClick = true;
         this.activeItem = this.activeItem === index ? null : index;
     }
+  ngOnInit() {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const user = JSON.parse(storedUser);
+      this.fullName  = user.firstName + ' ' + user.lastName;
+	  this.role = user.role // récupère le prénom
+    }
+  }
+
+	logout() { 
+		this.userService.logout();
+	}
 
 }

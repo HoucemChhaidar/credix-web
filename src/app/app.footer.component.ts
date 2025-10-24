@@ -7,7 +7,7 @@ import {Component} from '@angular/core';
 			<div class="logo-text">
 				<img src="assets/layout/images/logo-mirage@2x.png" alt="mirage-layout" />
 				<div class="text">
-					<h1>Mirage</h1>
+					<h1>Credix</h1>
 					<span>Premium Application Template</span>
 				</div>
 			</div>

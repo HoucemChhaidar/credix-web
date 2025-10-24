@@ -148,6 +148,7 @@ import {AppCodeModule} from './blocks/app-code/app.code.component';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import { WalletComponent } from './pages/wallet.component';
 
 FullCalendarModule.registerPlugins([
     dayGridPlugin,
@@ -283,7 +284,8 @@ FullCalendarModule.registerPlugins([
         DocumentationComponent,
         IconsComponent,
         BlocksComponent,
-        BlockViewer
+        BlockViewer,
+        WalletComponent
     ],
     providers: [
         {provide: LocationStrategy, useClass: HashLocationStrategy},

@@ -1,9 +1,9 @@
-import {Component, OnInit} from '@angular/core';
-import {Product} from '../demo/domain/product';
-import {ProductService} from '../demo/service/productservice';
-import {ConfirmationService, MessageService} from 'primeng/api';
-import {BreadcrumbService} from '../breadcrumb.service';
-import {UserService} from '../demo/service/user.service';
+import { Component, OnInit } from '@angular/core';
+import { Product } from '../demo/domain/product';
+import { ProductService } from '../demo/service/productservice';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { BreadcrumbService } from '../breadcrumb.service';
+import { UserService } from '../demo/service/user.service';
 
 @Component({
     templateUrl: './app.crud.component.html',
@@ -12,7 +12,7 @@ import {UserService} from '../demo/service/user.service';
 })
 export class AppCrudComponent implements OnInit {
 
-    productDialog: boolean;
+    userDialog: boolean;
 
     deleteProductDialog: boolean = false;
 
@@ -31,40 +31,65 @@ export class AppCrudComponent implements OnInit {
     statuses: any[];
 
     rowsPerPageOptions = [5, 10, 20];
+    users: any[] = [];
+    selectedUsers: any[] = [];
+    user: any = {};
+    roles = [
+    { label: 'Utilisateur', value: 'USER' },
+    { label: 'Administrateur', value: 'ADMIN' }
+    ];
+
 
     constructor(private productService: ProductService, private messageService: MessageService,
-                private confirmationService: ConfirmationService, private breadcrumbService: BreadcrumbService,
-                private userService: UserService
+        private confirmationService: ConfirmationService, private breadcrumbService: BreadcrumbService,
+        private userService: UserService
     ) {
         this.breadcrumbService.setItems([
-            {label: 'Pages'},
-            {label: 'Crud', routerLink: ['/pages/crud']}
+            { label: 'Pages' },
+            { label: 'Users', routerLink: ['/pages/users'] }
         ]);
     }
 
     ngOnInit() {
-        this.productService.getProducts().then(data => this.products = data);
-        this.userService.getUsers().then(data => {console.log(`>>>`, data)});
+        // this.productService.getProducts().then(data => this.products = data);
+        // this.userService.getUsers().then(data => {console.log(`>>>`, data)});
 
         this.cols = [
-            {field: 'name', header: 'Name'},
-            {field: 'price', header: 'Price'},
-            {field: 'category', header: 'Category'},
-            {field: 'rating', header: 'Reviews'},
-            {field: 'inventoryStatus', header: 'Status'}
+            { field: 'firstName', header: 'First Name' },
+            { field: 'lastName', header: 'Last Name' },
+            { field: 'email', header: 'Email' },
+            { field: 'phoneNumber', header: 'Phone Number' },
+            { field: 'role', header: 'Role' },
+            { field: 'active', header: 'Active' },
+            { field: 'createdAt', header: 'Created At' }
         ];
+        this.loadUsers();
+
 
         this.statuses = [
-            {label: 'INSTOCK', value: 'instock'},
-            {label: 'LOWSTOCK', value: 'lowstock'},
-            {label: 'OUTOFSTOCK', value: 'outofstock'}
+            { label: 'INSTOCK', value: 'instock' },
+            { label: 'LOWSTOCK', value: 'lowstock' },
+            { label: 'OUTOFSTOCK', value: 'outofstock' }
         ];
     }
 
     openNew() {
         this.product = {};
+        this.user = {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        phoneNumber: '',
+        companyName: '',
+        profileImageUrl: 'DQSDQFZFQSFQSFQSFQSF',
+        role: 'USER',   
+        active: true,
+        adminId: '2763359e-2f5c-4616-8155-43b0faae32f4'
+        };
+
         this.submitted = false;
-        this.productDialog = true;
+        this.userDialog = true;
     }
 
     deleteSelectedProducts() {
@@ -72,31 +97,31 @@ export class AppCrudComponent implements OnInit {
     }
 
     editProduct(product: Product) {
-        this.product = {...product};
-        this.productDialog = true;
+        this.product = { ...product };
+        this.userDialog = true;
     }
 
     deleteProduct(product: Product) {
         this.deleteProductDialog = true;
-        this.product = {...product};
+        this.product = { ...product };
     }
 
     confirmDeleteSelected() {
         this.deleteProductsDialog = false;
         this.products = this.products.filter(val => !this.selectedProducts.includes(val));
-        this.messageService.add({severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000});
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
         this.selectedProducts = null;
     }
 
     confirmDelete() {
         this.deleteProductDialog = false;
         this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000});
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
         this.product = {};
     }
 
     hideDialog() {
-        this.productDialog = false;
+        this.userDialog = false;
         this.submitted = false;
     }
 
@@ -108,7 +133,7 @@ export class AppCrudComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
                 this.products[this.findIndexById(this.product.id)] = this.product;
-                this.messageService.add({severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000});
+                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
             } else {
                 this.product.id = this.createId();
                 this.product.code = this.createId();
@@ -116,11 +141,11 @@ export class AppCrudComponent implements OnInit {
                 // @ts-ignore
                 this.product.inventoryStatus = this.product.inventoryStatus ? this.product.inventoryStatus.value : 'INSTOCK';
                 this.products.push(this.product);
-                this.messageService.add({severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000});
+                this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Created', life: 3000 });
             }
 
             this.products = [...this.products];
-            this.productDialog = false;
+            this.userDialog = false;
             this.product = {};
         }
     }
@@ -145,4 +170,34 @@ export class AppCrudComponent implements OnInit {
         }
         return id;
     }
+
+    loadUsers() {
+        this.userService.getUsers().then(res => {
+            if (res && res['data']) {
+                this.users = res['data'];
+            }
+        });
+    }
+
+    async saveUser() {
+    this.submitted = true;
+
+    if (!this.user.email || !this.user.password) {
+        console.warn("Champs requis manquants !");
+        return;
+    }
+
+    try {
+        const response = await this.userService.createUser(this.user);
+        console.log('Utilisateur créé avec succès :', response);
+        this.messageService.add({severity:'success', summary:'Succès', detail:'Utilisateur ajouté', life: 3000});
+        this.userDialog = false;
+        this.loadUsers(); // recharge la liste
+    } catch (error) {
+        console.error('Erreur lors de la création de l’utilisateur :', error);
+        this.messageService.add({severity:'error', summary:'Erreur', detail:'Échec de création', life: 3000});
+    }
+}
+
+
 }
