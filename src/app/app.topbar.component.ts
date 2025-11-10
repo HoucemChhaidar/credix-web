@@ -384,6 +384,7 @@ export class AppTopBarComponent implements OnInit {
 
 	logout() { 
 		this.userService.logout();
+		localStorage.clear();
 	}
 
 }

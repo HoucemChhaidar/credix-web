@@ -11,7 +11,7 @@
           </div>
         </ng-template>
          <ng-template pTemplate="right">
-            <button pButton pRipple label="Transfer Amount" icon="pi pi-credit-card" class="p-button-warning ml-2 text-black"
+            <button *ngIf="role == 'ADMIN'" pButton pRipple label="Transfer Amount" icon="pi pi-credit-card" class="p-button-warning ml-2 text-black"
               
                (click)="transferDialog = true"></button>
         </ng-template>
@@ -56,7 +56,8 @@
             <td>
               <div class="flex">
                 <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editWallet(wallet)"></button>
-                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteWallet(wallet)"></button>
+                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning mr-2" (click)="deleteWallet(wallet)"></button>
+                <button *ngIf="role != 'ADMIN'"  pButton pRipple icon="pi pi-credit-card" class="p-button-rounded p-button-primary" (click)="tranfertAmount(wallet)"></button>
               </div>
             </td>
           </tr>
@@ -95,5 +96,19 @@
   <ng-template pTemplate="footer">
     <button pButton pRipple label="No" icon="pi pi-times" class="p-button-text" (click)="transferDialog=false"></button>
     <button pButton pRipple label="Yes" icon="pi pi-check" class="p-button-text" (click)="confirmTransfer()"></button>
+  </ng-template>
+</p-dialog>
+<p-dialog header="Confirm Transfer" [(visible)]="transferWalletDialog" [modal]="true" [style]="{width:'400px'}">
+  <div class="confirmation-content">
+    <i class="pi pi-exclamation-triangle mr-2" style="font-size: 2rem"></i>
+    <span *ngIf="walletToTransfer">
+      Are you sure you want to transfer the amount to 
+      <strong>{{ walletToTransfer.companyName }} </strong>?
+    </span>
+  </div>
+
+  <ng-template pTemplate="footer">
+    <button pButton pRipple label="No" icon="pi pi-times" class="p-button-text" (click)="transferWalletDialog=false"></button>
+    <button pButton pRipple label="Yes" icon="pi pi-check" class="p-button-text" (click)="confirmTransferWallet()"></button>
   </ng-template>
 </p-dialog>

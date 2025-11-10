@@ -19,4 +19,20 @@ export class WalletService {
     
     return this.http.get<any[]>(`${environment.apiUrl}/wallets/admin`, { headers }).toPromise();
   }
+
+  sendMoney() {
+       const headers = new HttpHeaders({
+                'Authorization': `Bearer ${this.token}`,
+                'Content-Type': 'application/json',
+            });
+    return this.http.post(`${environment.apiUrl}/wallets/bulk-transfer`, '', { headers }).toPromise();
+  }
+  sendMoneyToWallet(walletId: string, amount: number) {
+       const headers = new HttpHeaders({
+                'Authorization': `Bearer ${this.token}`,
+                'Content-Type': 'application/json',
+            });
+    const body = { tokenizedId: walletId, amount: amount, description : '' };
+    return this.http.post(`${environment.apiUrl}/wallets/add-credit-to-admin`, body, { headers }).toPromise();
+  }
 }
