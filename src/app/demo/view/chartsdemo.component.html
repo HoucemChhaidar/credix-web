@@ -1,33 +1,63 @@
 <div class="grid p-fluid">
+    <!-- Stat Cards -->
+    <div class="col-12">
+        <div class="grid">
+            <div class="col-12 md:col-3" *ngIf="overviewStats">
+                <div class="card text-center">
+                    <h6>Total Users/Admins</h6>
+                    <h2>{{ overviewStats.totalUsers }}</h2>
+                </div>
+            </div>
+            <div class="col-12 md:col-3" *ngIf="overviewStats">
+                <div class="card text-center">
+                    <h6>Active Users/Admins</h6>
+                    <h2>{{ overviewStats.activeUsers }}</h2>
+                </div>
+            </div>
+            <div class="col-12 md:col-3" *ngIf="overviewStats">
+                <div class="card text-center">
+                    <h6>Total Credit Distributed</h6>
+                    <h2>{{ overviewStats.totalCreditDistributed | number:'1.0-2' }}</h2>
+                </div>
+            </div>
+            <div class="col-12 md:col-3" *ngIf="overviewStats">
+                <div class="card text-center">
+                    <h6>My Wallet Balance</h6>
+                    <h2>{{ overviewStats.walletBalance | number:'1.0-2' }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Charts -->
     <div class="col-12 lg:col-6">
         <div class="card">
-            <h5>Linear Chart</h5>
+            <h5>Credit Distribution Over Time</h5>
             <p-chart type="line" [data]="lineData" [options]="lineOptions" [style]="{'width': '50%'}"></p-chart>
         </div>
 
         <div class="card flex flex-column align-items-center">
-            <h5 class="text-left w-full">Pie Chart</h5>
+            <h5 class="text-left w-full">Active vs Inactive (Pie Chart)</h5>
             <p-chart type="pie" [data]="pieData" [options]="pieOptions" [style]="{'width': '50%'}"></p-chart>
         </div>
 
         <div class="card flex flex-column align-items-center">
-            <h5 class="text-left w-full">Polar Area Chart</h5>
+            <h5 class="text-left w-full">Active vs Inactive (Polar Area)</h5>
             <p-chart type="polarArea" [data]="polarData" [options]="polarOptions" [style]="{'width': '50%'}"></p-chart>
         </div>
     </div>
     <div class="col-12 lg:col-6">
         <div class="card">
-            <h5>Bar Chart</h5>
+            <h5>Monthly Credits Comparison</h5>
             <p-chart type="bar" [data]="barData" [options]="barOptions"></p-chart>
         </div>
 
         <div class="card flex flex-column align-items-center">
-            <h5 class="text-left w-full">Doughnut Chart</h5>
-            <p-chart type="doughnut" [data]="pieData" [options]="pieOptions" [style]="{'width': '50%'}"></p-chart>
+            <h5 class="text-left w-full">Active vs Inactive (Doughnut)</h5>
+            <p-chart type="doughnut" [data]="doughnutData" [options]="pieOptions" [style]="{'width': '50%'}"></p-chart>
         </div>
 
         <div class="card flex flex-column align-items-center">
-            <h5 class="text-left w-full">Radar Chart</h5>
+            <h5 class="text-left w-full">Credit Trends (Radar)</h5>
             <p-chart type="radar" [data]="radarData" [options]="radarOptions" [style]="{'width': '50%'}"></p-chart>
         </div>
     </div>

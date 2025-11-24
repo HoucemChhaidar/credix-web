@@ -3,6 +3,9 @@ import {BreadcrumbService} from '../../breadcrumb.service';
 import {Subscription} from 'rxjs';
 import {AppConfig} from '../domain/appconfig';
 import {ConfigService} from '../service/app.config.service';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment.prod';
+
 
 @Component({
     templateUrl: './chartsdemo.component.html'
@@ -19,6 +22,10 @@ export class ChartsDemoComponent implements OnInit, OnDestroy {
 
     radarData: any;
 
+    overviewStats: any;
+
+    doughnutData: any;
+
     lineOptions: any;
 
     barOptions: any;
@@ -33,7 +40,7 @@ export class ChartsDemoComponent implements OnInit, OnDestroy {
 
     subscription: Subscription;
 
-    constructor(private breadcrumbService: BreadcrumbService, public configService: ConfigService) {
+    constructor(private breadcrumbService: BreadcrumbService, public configService: ConfigService, private http: HttpClient) {
         this.breadcrumbService.setItems([
             {label: 'UI Kit'},
             {label: 'Charts', routerLink: ['/uikit/button']}
@@ -47,117 +54,71 @@ export class ChartsDemoComponent implements OnInit, OnDestroy {
             this.updateChartOptions();
         });
 
-        this.lineData = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [
-                {
-                    label: 'First Dataset',
-                    data: [65, 59, 80, 81, 56, 55, 40],
+        const token = localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        this.http.get<any>(`${environment.apiUrl}/analytics/dashboard`, { headers }).subscribe(res => {
+            const data = res.data;
+            this.overviewStats = data.overviewStats;
+            // Line chart: creditDistributionOverTime
+            this.lineData = {
+                labels: data.creditDistributionOverTime.labels,
+                datasets: data.creditDistributionOverTime.datasets.map((ds: any, i: number) => ({
+                    label: ds.label,
+                    data: ds.data,
                     fill: false,
-                    backgroundColor: '#2f4860',
-                    borderColor: '#2f4860',
+                    backgroundColor: i === 0 ? '#2f4860' : '#00bb7e',
+                    borderColor: i === 0 ? '#2f4860' : '#00bb7e',
                     tension: .4
-                },
-                {
-                    label: 'Second Dataset',
-                    data: [28, 48, 40, 19, 86, 27, 90],
-                    fill: false,
-                    backgroundColor: '#00bb7e',
-                    borderColor: '#00bb7e',
-                    tension: .4
-                }
-            ]
-        };
-
-        this.barData = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
-            datasets: [
-                {
-                    label: 'My First dataset',
-                    backgroundColor: '#2f4860',
-                    data: [65, 59, 80, 81, 56, 55, 40]
-                },
-                {
-                    label: 'My Second dataset',
-                    backgroundColor: '#00bb7e',
-                    data: [28, 48, 40, 19, 86, 27, 90]
-                }
-            ]
-        };
-
-        this.pieData = {
-            labels: ['A', 'B', 'C'],
-            datasets: [
-                {
-                    data: [300, 50, 100],
-                    backgroundColor: [
-                        "#FF6384",
-                        "#36A2EB",
-                        "#FFCE56"
-                    ],
-                    hoverBackgroundColor: [
-                        "#FF6384",
-                        "#36A2EB",
-                        "#FFCE56"
-                    ]
-                }
-            ]
-        };
-
-        this.polarData = {
-            datasets: [{
-                data: [
-                    11,
-                    16,
-                    7,
-                    3,
-                    14
-                ],
-                backgroundColor: [
-                    "#FF6384",
-                    "#4BC0C0",
-                    "#FFCE56",
-                    "#E7E9ED",
-                    "#36A2EB"
-                ],
-                label: 'My dataset'
-            }],
-            labels: [
-                "Red",
-                "Green",
-                "Yellow",
-                "Grey",
-                "Blue"
-            ]
-        };
-
-        this.radarData = {
-            labels: ['Eating', 'Drinking', 'Sleeping', 'Designing', 'Coding', 'Cycling', 'Running'],
-            datasets: [
-                {
-                    label: 'My First dataset',
-                    backgroundColor: 'rgba(179,181,198,0.2)',
-                    borderColor: 'rgba(179,181,198,1)',
-                    pointBackgroundColor: 'rgba(179,181,198,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(179,181,198,1)',
-                    data: [65, 59, 90, 81, 56, 55, 40]
-                },
-                {
-                    label: 'My Second dataset',
-                    backgroundColor: 'rgba(255,99,132,0.2)',
-                    borderColor: 'rgba(255,99,132,1)',
-                    pointBackgroundColor: 'rgba(255,99,132,1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(255,99,132,1)',
-                    data: [28, 48, 40, 19, 96, 27, 100]
-                }
-            ]
-        };
-
-        this.updateChartOptions();
+                }))
+            };
+            // Bar chart: monthlyComparison
+            this.barData = {
+                labels: data.monthlyComparison.labels,
+                datasets: data.monthlyComparison.datasets.map((ds: any, i: number) => ({
+                    label: ds.label,
+                    backgroundColor: i === 0 ? '#2f4860' : '#00bb7e',
+                    data: ds.data
+                }))
+            };
+            // Pie chart: activeStatusDistribution
+            this.pieData = {
+                labels: data.activeStatusDistribution.labels,
+                datasets: [
+                    {
+                        data: data.activeStatusDistribution.data,
+                        backgroundColor: [
+                            '#00bb7e',
+                            '#FF6384'
+                        ],
+                        hoverBackgroundColor: [
+                            '#00bb7e',
+                            '#FF6384'
+                        ]
+                    }
+                ]
+            };
+            // Doughnut chart: same data as pie chart
+            this.doughnutData = {
+                labels: data.activeStatusDistribution.labels,
+                datasets: [
+                    {
+                        data: data.activeStatusDistribution.data,
+                        backgroundColor: [
+                            '#00bb7e',
+                            '#FF6384'
+                        ],
+                        hoverBackgroundColor: [
+                            '#00bb7e',
+                            '#FF6384'
+                        ]
+                    }
+                ]
+            };
+            // Polar & Radar: placeholder (à adapter si l'API évolue)
+            this.polarData = this.pieData;
+            this.radarData = this.lineData;
+            this.updateChartOptions();
+        });
     }
 
     updateChartOptions() {
