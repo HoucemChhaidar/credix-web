@@ -32,7 +32,7 @@ async login() {
 
   try {
     const result = await this.authService.login(this.email, this.password);
-    this.authService.userLogin()
+    await this.authService.userLogin();
 
     if (result && result.data.token) {
       this.messageService.add({

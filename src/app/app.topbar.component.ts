@@ -364,8 +364,8 @@ import { Router } from '@angular/router';
 export class AppTopBarComponent implements OnInit {
 
     activeItem: number;
-	fullName : string = '';
-	role : string = '';
+	fullName : string = JSON.parse(localStorage.getItem('user'))?.firstName + ' ' + JSON.parse(localStorage.getItem('user'))?.lastName ;
+	role : string =  JSON.parse(localStorage.getItem('user'))?.role;
 
     constructor(public appMain: AppMainComponent, private userService:UserService) {}
 
@@ -377,12 +377,12 @@ export class AppTopBarComponent implements OnInit {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const user = JSON.parse(storedUser);
-      this.fullName  = user.firstName + ' ' + user.lastName;
-	  this.role = user.role // récupère le prénom
+     // this.fullName  = user.firstName + ' ' + user.lastName;
+	 // this.role = user.role // récupère le prénom
     }
   }
 
-	logout() { 
+	logout() {
 		this.userService.logout();
 		localStorage.clear();
 	}
