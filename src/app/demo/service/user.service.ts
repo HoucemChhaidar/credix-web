@@ -5,81 +5,98 @@ import { Router } from '@angular/router';
 import { lastValueFrom } from 'rxjs';
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class UserService {
 
-    private token = localStorage.getItem('token') || null;
-    private apiUrl = `${environment.authUrl}/login`;
+  private token = localStorage.getItem('token') || null;
+  private apiUrl = `${environment.authUrl}/login`;
 
-    constructor(private http: HttpClient, private router:Router) { }
+  constructor(private http: HttpClient, private router: Router) { }
 
-    getUsers() {
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json',
-        });
-
-        return this.http.get<any[]>(`${environment.apiUrl}/users`, { headers }).toPromise();
-    }
-    async userLogin() {
+  getUsers() {
     const headers = new HttpHeaders({
-        'Authorization': `Bearer ${this.token}`,
-        'Content-Type': 'application/json',
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+    });
+
+    return this.http.get<any[]>(`${environment.apiUrl}/users`, { headers }).toPromise();
+  }
+  async userLogin() {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
     });
 
     try {
-        const response = await lastValueFrom(this.http.get<{status:number, message:string, data:any}>(`${environment.apiUrl}/users/me`, { headers }));
+      const response = await lastValueFrom(this.http.get<{ status: number, message: string, data: any }>(`${environment.apiUrl}/users/me`, { headers }));
 
-        if (response && response.data) {
+      if (response && response.data) {
         localStorage.setItem('user', JSON.stringify(response.data));
-        }
+      }
 
-        return response.data; // tu renvoies directement l'objet user
+      return response.data; // tu renvoies directement l'objet user
     } catch (error) {
-        console.error('Erreur lors de la récupération de l’utilisateur', error);
-        return null;
+      console.error('Erreur lors de la récupération de l’utilisateur', error);
+      return null;
     }
-    }
+  }
 
 
-    createUser(user: any): Promise<any> {
-        const headers = new HttpHeaders({
-            'Authorization': `Bearer ${this.token}`,
-            'Content-Type': 'application/json',
-        });
-        return this.http.post(`${environment.apiUrl}/users`, user, { headers }).toPromise();
-    }
+  createUser(user: any): Promise<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+    });
+    return this.http.post(`${environment.apiUrl}/users`, user, { headers }).toPromise();
+  }
+  updateUser(id: any, user: any): Promise<any> {
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${this.token}`,
+      'Content-Type': 'application/json',
+    });
 
-    async login(email: string, password: string): Promise<any> {
+    return this.http
+      .put(`${environment.apiUrl}/users/${id}`, user, { headers })
+      .toPromise();
+  }
 
 
-        const payload = { email, password };
-        const headers = new HttpHeaders({ 'Content-Type': 'application/json' });    
-        const response: any = await this.http.post(this.apiUrl, payload, { headers }).toPromise();
+  async login(email: string, password: string): Promise<any> {
 
-            if (response ) {
-                this.token = response.data.token;
-                localStorage.setItem('token', this.token);
-                return response;
-            }
-        
-    }
 
-    /**
-     * Déconnexion
-     */
-    logout() {
-        this.token = null;
-        localStorage.removeItem('token');
-        this.router.navigate(['/login']);
-    }
+    const payload = { email, password };
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const response: any = await this.http.post(this.apiUrl, payload, { headers }).toPromise();
 
-    /**
-     * Vérifie si l'utilisateur est connecté
-     */
-    isLoggedIn(): boolean {
-        return !!this.token;
+    if (response) {
+      this.token = response.data.token;
+      localStorage.setItem('token', this.token);
+      return response;
     }
 
+  }
+
+  /**
+   * Déconnexion
+   */
+  logout() {
+    this.token = null;
+    localStorage.removeItem('token');
+    this.router.navigate(['/login']);
+  }
+
+  /**
+   * Vérifie si l'utilisateur est connecté
+   */
+  isLoggedIn(): boolean {
+    return !!this.token;
+  }
+  deleteUser(id: any): Promise<any> {
+    const headers = new HttpHeaders({
+      Authorization: `Bearer ${this.token}`,
+    });
+
+    return this.http.delete(`${environment.apiUrl}/users/${id}`, { headers }).toPromise();
+  }
 }
